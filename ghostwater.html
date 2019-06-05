@@ -156,10 +156,65 @@ player = {
 
 function doAction() {
  	  var answerTxt = document.getElementById("response").value.toLowerCase();
- 		
 
+    var verbNoun = answerTxt.split(" ")
+    // ["pickup", "wolfpelt"]
+    // verb = verbNoun[0]
+      var verb = verbNoun[0]
+      var noun = verbNoun[1]
 
- 		if (answerTxt === "pickup") {
+      switch(verb){
+        case "pickup":
+          pickUp(noun);
+          break;
+
+        case "drop":
+          drop(noun);
+          break;
+
+        case "attack":
+          attack(noun);
+          break;
+
+        case "inventory":
+          showInventory();
+          break;
+
+        case "where":
+          where();
+          break;
+
+        case "go":
+          go(noun);
+          break;
+
+      }
+} //doAction
+
+function drop(noun) {
+
+            //loop through all obects in room
+            response_label.innerHTML = " "
+
+            if (inventory.length >0) { 
+                     for (var i = inventory.length-1; i>= 0; i--) {                 
+                        console.log(     objects[inventory[i]].name    )                     
+                        response_label.innerHTML += "You dropped "+objects[inventory[i]].name + "<br>"                       
+                        //add the obect to room
+                        rooms[currentRoom].roomObjects.push(inventory[i])
+                        //remove that obect from inventory
+                        inventory.splice(i, 1)
+                      }
+            } else {
+
+                      response_label.innerHTML = " You dont have anything! <br>"
+
+            }
+} //drop
+             
+
+    
+function pickUp(noun) {
 
        		  //loop through all obects in room
             response_label.innerHTML = " "
@@ -174,13 +229,15 @@ function doAction() {
                  			rooms[currentRoom].roomObjects.splice(i, 1)
        		 }  
 
- 		}
+} //pickup
 
 
-    if (answerTxt === "attack") {
+function attack(noun) {
 
             //loop through all obects in room
             response_label.innerHTML = " "
+            
+   if (rooms[currentRoom].roomCreatures.length > 0) {
             for (var i = rooms[currentRoom].roomCreatures.length-1; i>= 0; i--) {
 
                       var currentDmg = Math.floor((Math.random() * player.attackMax) + player.attackMin)
@@ -191,45 +248,29 @@ function doAction() {
 
                       response_label.innerHTML += "You hit the " + thisCreature.name + " for " + currentDmg +" damage, they have " + thisCreature.health + " health left <br>"
                       
-                      //add the obect to inventory
+                      //creature dies
                       if (thisCreature.health < 1) {
 
                           rooms[currentRoom].roomObjects.push(thisCreature.loot)
 
                           response_label.innerHTML += "<br>You have defeated the " + thisCreature.name +"!<br>"
 
+                          rooms[currentRoom].roomCreatures.splice(i, 1)
                       }
-                      //remove that obect from the room's obect array                      
-           }  
+                                            
+           } 
+    } else {
+       response_label.innerHTML += "There is no one here to attack<br>"
 
-    }
+    } 
 
- 		if (answerTxt === "drop all") {
+} //attack
 
-       		  //loop through all obects in room
-            response_label.innerHTML = " "
-
-            if (inventory.length >0) { 
-         		         for (var i = inventory.length-1; i>= 0; i--) {     		  			
-                   			console.log(     objects[inventory[i]].name    )                     
-                   			response_label.innerHTML += "You dropped "+objects[inventory[i]].name + "<br>"                       
-                        //add the obect to room
-                   			rooms[currentRoom].roomObjects.push(inventory[i])
-                        //remove that obect from inventory
-                   			inventory.splice(i, 1)
-                      }
-            } else {
-
-                 			response_label.innerHTML = " You dont have anything! <br>"
-
-            }
-       		   
-
- 		}
+ 		
 
 
 
- 		if (answerTxt === "inventory") {
+function showInventory() {
 
             response_label.innerHTML = " "
        		  if (inventory.length >0) { 
@@ -244,31 +285,30 @@ function doAction() {
                  	 response_label.innerHTML = " You dont have anything! <br>"
             }
               
- 		}
+} //inventory
 
 
 
 
- 		if (answerTxt === "where") {
+function where() {
  			showRoom()
 		
 		}
 		
 
+function go(direction){
+		if (direction === "west"||direction === "east"|| direction === "north"||direction === "south"){
 
-		if (answerTxt === "west"||answerTxt === "east"|| answerTxt === "north"||answerTxt === "south"){
-
- 						if (rooms[currentRoom][answerTxt] != null){
- 						         currentRoom = rooms[currentRoom][answerTxt];
+ 						if (rooms[currentRoom][direction] != null){
+ 						         currentRoom = rooms[currentRoom][direction];
  						         showRoom()
 
  						} else {
 
- 						         response_label.innerHTML =  "You can't go " + answerTxt;
+ 						         response_label.innerHTML =  "You can't go " + direction;
  			      }
- 		}
-
-} //function
+    }
+} //movement
 
 
 
@@ -297,7 +337,7 @@ function showRoom() {
             }
             }
           	
-    }
+    }//show room
 
 
 
