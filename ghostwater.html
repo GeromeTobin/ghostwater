@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ghost wWter</title>
+</head>
+<body>
+	<center>
+		<h1>Ghost Water</h1>
+<input id="response" style="display: inline;" type="text" value="">
+
+<button type="button" onclick="doAction()">do action</button>
+
+<p id="response_label"></p>
+
+</center>
+<script type="text/javascript">
+
+
+
+var rooms = []
+var objects = []
+
+room1 = {
+  id: 1,
+  name :  "Green Meadow",
+  description: "You are standing in a Green Meadow. There is a road leading north and path to the east.",
+   roomObjects: [3],
+   roomCreatures: [],
+   east: 3,
+   south: null,
+   north: 2,
+   west: null,
+}
+
+room2 = {
+  id: 2,
+  name :  "Dark Road",
+  description: "You are standing on a dark road that trails off to the south... ",
+   roomObjects: [1],
+   roomCreatures: [],
+   east: null,
+   south: 1,
+   north: null,
+   west: null,
+}
+
+room3 = {
+  id: 3,
+  name :  "Outside Red House",
+  description: "You are standing near a Red House. There is a well trodden path to the west.",
+   roomObjects: [4],
+   roomCreatures: [],
+   east: null,
+   south: null,
+   north: 4,
+   west: 1,
+}
+
+rooms[1] = room1
+rooms[2] = room2
+rooms[3] = room3
+
+
+
+
+object1 = {
+name: "rusty sword",
+id: 1,
+description: "a rusted, one handed sword"
+}
+
+object2 = {
+name: "lantern",
+id: 2,
+description: "an unlit lantern, with a rusted handle"
+}
+
+object3 = {
+name: "hat",
+id: 3,
+description: "a wizards hat, smells kinda funky"
+}
+
+object4 = {
+name: "rat",
+id: 4,
+description: "rat!"
+}
+
+object5 = {
+name: "apple",
+id: 5,
+description: "a red apple"
+}
+
+object6 = {
+name: "wolf pelt",
+id: 6,
+description: "the fur of a wolf"
+}
+
+objects[1] = object1
+objects[2] = object2
+objects[3] = object3
+objects[4] = object4
+objects[5] = object5
+objects[6] = object6
+
+var creatures = []
+
+
+
+
+creature3 = {
+name: "orc",
+id: 3,
+health: 40,
+attackMax: 12,
+attackMin: 5,
+loot: [],
+}
+
+creatures[1] = {
+  name: "wolf",
+  id: 1,
+  health: 10,
+  attackMax: 5,
+  attackMin: 1,
+  loot: [6]
+}
+
+creatures[2] = {
+  name: "skeleton",
+  id: 2,
+  health: 20,
+  attackMax: 8,
+  attackMin: 2,
+  loot: [1]
+}
+
+creatures[3] = creature3
+
+
+
+// SETTING UP THE GAME
+var currentRoom = 1
+var inventory = [2, 5]
+rooms[1].roomCreatures = [1, 2]
+
+player = {
+  name: "elysium",
+  health: 80,
+  attackMax: 8,
+  attackMin: 2,
+}
+
+function doAction() {
+ 	  var answerTxt = document.getElementById("response").value.toLowerCase();
+ 		
+
+
+ 		if (answerTxt === "pickup") {
+
+       		  //loop through all obects in room
+            response_label.innerHTML = " "
+       		  for (var i = rooms[currentRoom].roomObjects.length-1; i>= 0; i--) {
+
+                 			console.log(     objects[rooms[currentRoom].roomObjects[i]].name    )                     
+                 			response_label.innerHTML += "You picked up a "+objects[rooms[currentRoom].roomObjects[i]].name + "<br>"
+                      
+                      //add the obect to inventory
+                 			inventory.push(rooms[currentRoom].roomObjects[i])
+                      //remove that obect from the room's obect array	
+                 			rooms[currentRoom].roomObjects.splice(i, 1)
+       		 }  
+
+ 		}
+
+
+    if (answerTxt === "attack") {
+
+            //loop through all obects in room
+            response_label.innerHTML = " "
+            for (var i = rooms[currentRoom].roomCreatures.length-1; i>= 0; i--) {
+
+                      var currentDmg = Math.floor((Math.random() * player.attackMax) + player.attackMin)
+                      var thisCreatureNum = rooms[currentRoom].roomCreatures[i]
+                      var thisCreature = creatures[thisCreatureNum]
+
+                      thisCreature.health = thisCreature.health - currentDmg  
+
+                      response_label.innerHTML += "You hit the " + thisCreature.name + " for " + currentDmg +" damage, they have " + thisCreature.health + " health left <br>"
+                      
+                      //add the obect to inventory
+                      if (thisCreature.health < 1) {
+
+                          rooms[currentRoom].roomObjects.push(thisCreature.loot)
+
+                          response_label.innerHTML += "<br>You have defeated the " + thisCreature.name +"!<br>"
+
+                      }
+                      //remove that obect from the room's obect array                      
+           }  
+
+    }
+
+ 		if (answerTxt === "drop all") {
+
+       		  //loop through all obects in room
+            response_label.innerHTML = " "
+
+            if (inventory.length >0) { 
+         		         for (var i = inventory.length-1; i>= 0; i--) {     		  			
+                   			console.log(     objects[inventory[i]].name    )                     
+                   			response_label.innerHTML += "You dropped "+objects[inventory[i]].name + "<br>"                       
+                        //add the obect to room
+                   			rooms[currentRoom].roomObjects.push(inventory[i])
+                        //remove that obect from inventory
+                   			inventory.splice(i, 1)
+                      }
+            } else {
+
+                 			response_label.innerHTML = " You dont have anything! <br>"
+
+            }
+       		   
+
+ 		}
+
+
+
+ 		if (answerTxt === "inventory") {
+
+            response_label.innerHTML = " "
+       		  if (inventory.length >0) { 
+
+                 		  for (var i = inventory.length-1; i>= 0; i--) {       		  				
+                 		  				var objectID = inventory[i]     			                  
+                              response_label.innerHTML += "You have a "+ objects[objectID].name + "<br>"                   
+                      }  
+
+            } else {
+
+                 	 response_label.innerHTML = " You dont have anything! <br>"
+            }
+              
+ 		}
+
+
+
+
+ 		if (answerTxt === "where") {
+ 			showRoom()
+		
+		}
+		
+
+
+		if (answerTxt === "west"||answerTxt === "east"|| answerTxt === "north"||answerTxt === "south"){
+
+ 						if (rooms[currentRoom][answerTxt] != null){
+ 						         currentRoom = rooms[currentRoom][answerTxt];
+ 						         showRoom()
+
+ 						} else {
+
+ 						         response_label.innerHTML =  "You can't go " + answerTxt;
+ 			      }
+ 		}
+
+} //function
+
+
+
+
+function showRoom() {
+
+          var roomObjectNum
+          response_label.innerHTML = " "
+
+          //check the objects array in the room
+          //if the objects array has length  meaning there ARE ONJECTS
+           response_label.innerHTML = currentRoom + ". <b>" + rooms[currentRoom].name + "</b>  <br>" + rooms[currentRoom].description;
+
+          if (rooms[currentRoom].roomObjects.length > 0) {
+                
+         		 for (var i = rooms[currentRoom].roomObjects.length-1; i>= 0; i--) {
+          	       	 		var objectNum = rooms[currentRoom].roomObjects[i]                 
+              					response_label.innerHTML += "<br> You see a " + objects[objectNum].name
+        	}
+            }
+             if (rooms[currentRoom].roomCreatures.length > 0) {
+                
+             for (var i = rooms[currentRoom].roomCreatures.length-1; i>= 0; i--) {
+                        var creatureNum = rooms[currentRoom].roomCreatures[i]                 
+                        response_label.innerHTML += "<br> There is a <font color='red'>" + creatures[creatureNum].name + "</font> nearby"
+            }
+            }
+          	
+    }
+
+
+
+</script>
+</body>
+</html>
