@@ -37,7 +37,7 @@ room2 = {
   name :  "Dark Road",
   description: "You are standing on a dark road that trails off to the south... ",
    roomObjects: [1],
-   roomCreatures: [],
+   roomCreatures: [3],
    east: null,
    south: 1,
    north: null,
@@ -195,7 +195,7 @@ function drop(noun) {
 
             //loop through all obects in room
             response_label.innerHTML = " "
-
+if (noun = all) {
             if (inventory.length >0) { 
                      for (var i = inventory.length-1; i>= 0; i--) {                 
                         console.log(     objects[inventory[i]].name    )                     
@@ -208,6 +208,14 @@ function drop(noun) {
             } else {
 
                       response_label.innerHTML = " You dont have anything! <br>"
+
+            }}
+            else {
+              if (inventory.length >0) {}
+                else {
+                  response.innerHTML = " You don't have anything! <br>"
+
+                }
 
             }
 } //drop
